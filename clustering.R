@@ -1,4 +1,4 @@
-### Eksamen 2. Semester ###
+### Clustering ###
 library(readr)
 library(tidyverse)
 library(dplyr)
@@ -6,10 +6,9 @@ library(ggplot2)
 library(dendextend)
 library(factoextra)
 
-setwd("Documents/Dataanalyse/2. Semester/Eksamen/OneDrive_1_31-03-2022")
+setwd("path")
 
-#### Opgave 3.1 ####
-### CLustering på afleveringer ###
+#### Clustering på afleveringer ####
 
 ## Indlæser afleveringer fra Superligaen ###
 passes_superliga_s2122_wyscout_main_info <- read_csv("passes_superliga_s2122_wyscout_main_info.csv")
@@ -41,7 +40,7 @@ aflv_cluster<-table(cut_hcluster, afleveringer_superliga$eventId)
 aflv_cluster1<-subset(aflv_cluster, aflv_cluster$f)
 
 
-#### 3.1 Brøndby spiller ####
+#### Brøndby spiller ####
 
 Brøndby_afleveringer<-subset(afleveringer_superliga, afleveringer_superliga$teamId=="7453")
 
@@ -67,7 +66,6 @@ cut_rosted<- cutree(hc.out_rosted, k = 7)
 #Laver en tabel med eventID + cluster nummer 
 Rosted_cluster<-table(cut_rosted, Rosted_ID)
 Rosted_cluster<-as.data.frame(Rosted_cluster)
-# !!! 
 Rosted_cluster<-subset(Rosted_cluster, Rosted_cluster$Freq=="1")
 Rosted_cluster<-Rosted_cluster[,1:2]
 
@@ -78,8 +76,7 @@ Rosted_list<-list(Rosted_afleveringer, Rosted_cluster)
 Rosted_data<-Reduce(function(x, y) merge(x, y, all=TRUE), Rosted_list) 
 
 
-#### 3.2 ####
-## Importerer skud fra Superligaen ##
+#### Importerer skud fra Superligaen ####
 shots_superliga_s2122_wyscout_main_info <- read_delim("shots_superliga_s2122_wyscout_main_info.csv", 
                                                       delim = ";", escape_double = FALSE, trim_ws = TRUE)
 
@@ -92,6 +89,7 @@ skud_superliga<-skud_liste %>% reduce(full_join, by='eventId')
 
 #Udvælger de variabler jeg vil bruge
 skud_udvalgte<-skud_superliga %>% select(10 |11 |25|26)
+
 #Laver kolonne 25 & 26 numeriske (0= false, 1= true)
 skud_udvalgte$shot_isGoal<-ifelse(skud_udvalgte$shot_isGoal=="TRUE", 1,0)
 skud_udvalgte$shot_onTarget<-ifelse(skud_udvalgte$shot_onTarget=="TRUE", 1,0)
@@ -122,9 +120,8 @@ final_data_skud <- cbind(skud_udvalgte, cluster = km.skud$cluster)
 head(final_data_skud)
 
 
-#### 3.3 ####
-### Clustering på spilleres skud og afleveringer ###
-## Dataen ligger under opggave 3.1 & 3.2 ##
+#### Clustering på spilleres skud og afleveringer ####
+## Dataen ligger under foregående ##
 ## afleveringer_superliga + skud_superliga ##
 spillerdata_liste<-list(afleveringer_liste, skud_liste)
 spiller_data<-Reduce(function(afleveringer_superliga, skud_superliga) merge(afleveringer_superliga, skud_superliga, all=TRUE), spillerdata_liste)
@@ -192,6 +189,7 @@ km.spillere <- kmeans(udvalgte_variabler, 4)
 km.spillere$cluster
 table(km.spillere$cluster)
 km.spillere$centers
+
 #Laver plot
 fviz_cluster(km.spillere, data = udvalgte_variabler)
 
