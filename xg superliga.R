@@ -1,4 +1,5 @@
-### Eksamen ###
+### xG Superliga ###
+
 library(readr)
 library(tidyverse)
 library(randomForest)
@@ -8,7 +9,7 @@ library(rpart)
 library(rpart.plot)
 
 
-setwd("Documents/Dataanalyse/2. Semester/Eksamen/OneDrive_1_31-03-2022")
+setwd("path")
 
 #### Importerer alle datasæt direkte ####
 
@@ -19,7 +20,7 @@ shots_superliga_s2122_wyscoutshots <- read_delim("shots_superliga_s2122_wyscouts
                                                  delim = ";", escape_double = FALSE, trim_ws = TRUE)
 
 
-#### Opgave 1.1 #### 
+#### xG Superliga  #### 
 
 ## Indlæsning af skud Superliga sæson 21/22 ##
 
@@ -27,7 +28,6 @@ shots_superliga_s2122_wyscoutshots <- read_delim("shots_superliga_s2122_wyscouts
 
 skud_superliga<-merge(shots_superliga_s2122_wyscout_main_info, shots_superliga_s2122_wyscoutshots, by= "eventId")
 
-#### Opgave 1.2 ####
 #Laver et subset med alle mål 
 mål_superliga<-subset(skud_superliga, skud_superliga$shot_isGoal=="TRUE")
 
@@ -66,8 +66,6 @@ mean_dist<-mean(x8_distance)
 ## Vinkel til mål ##
 mean_vinkel<-mean(x9_vinkel)
 
-#### Opgave 1.4 ####
-
 ### Definerer Y-variablen ###
 y_variabel<-skud_superliga$shot_isGoal
 y_variabel<-ifelse(y_variabel=="TRUE", 1,0)
@@ -94,6 +92,7 @@ x6_teamformation<-skud_superliga$teamFormation
 x7_opteamformation<-skud_superliga$opponentTeamFormation
 
 ## X8 Distance til mål ##
+#Udregnes manuelt 
 q<-120-(skud_superliga$location_X)
 qq<-q^2
 qqq<-40-(skud_superliga$location_X)
@@ -101,6 +100,7 @@ qqqq<-qqq^2
 x8_distance<-sqrt(qq+qqqq)
 
 ## X9 Vinkel ##
+#Udregnes manuelt ud fra distancen 
 w<-atan((8*q)/qq+(qqqq - (8/2)^2))*180/pi
 x9_vinkel<-w
 
@@ -112,6 +112,7 @@ datasæt<-data.frame(y_variabel, X_variabler)
 datasæt<-na.omit(datasæt)
 
 ### Opdel i træning og test ### 
+
 ## 75% af datasættet er test
 data1 = sort(sample(nrow(datasæt)*.75))
 
@@ -122,6 +123,7 @@ train<-datasæt[data1,]
 test<-datasæt[-data1,]
 
 ### Random Forest ###
+
 #Kører random forest model
 model<-randomForest(y_variabel ~ ., data = train)
 

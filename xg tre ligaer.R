@@ -1,5 +1,4 @@
-### Eksamen 2. semester ###
-###Opgave 2###
+### xG Tre Ligaer ###
 
 library(readr)
 library(tidyverse)
@@ -7,12 +6,10 @@ library(caTools)
 library(rpart)
 library(rpart.plot)
 
-setwd("Documents/Dataanalyse/2. Semester/Eksamen/OneDrive_1_31-03-2022")
-path<-"Documents/Dataanalyse/2. Semester/Eksamen/"
+setwd("path")
 
-#### 2.1 ####
 
-### Indlæsning af data ###
+#### Indlæsning af data ####
 
 ## Bundligaer ##
 bot_wyscout_shots_new <- read_delim("bot_wyscout_shots_new.csv", 
@@ -62,9 +59,7 @@ topliga<-topliga %>% select (-"teamId", -"category")
 alle_ligaer<-rbind(bundliga, midliga, topliga)
 
 
-#### 2.2 ####
-
-### Beskrivende statistik ### 
+#### Beskrivende statistik ####
 
 #Laver et subset med alle mål 
 mål_alle_ligaer<-subset(alle_ligaer, alle_ligaer$shot_isGoal=="TRUE")
@@ -165,8 +160,7 @@ goalzone<-table(ikkemål_goalzone)
 
 write.csv(goalzone, "goalzone.csv")
 
-#### 2.3 ####
-### Possession / Opspil ### 
+#### Possession / Opspil ####
 
 ###Possession attack flank ###
 
@@ -242,7 +236,8 @@ mean(y_start_pos_top)
 y_slut_pos_top<-topliga$possessionEndLocation_Y
 mean(y_slut_pos_top)
 
-#### 2.4 ####
+#### Træmodeller ####
+
 library(randomForest)
 library(tree)
 set.seed(1)
@@ -276,6 +271,7 @@ x6_teamformation<-alle_ligaer$teamFormation
 x7_opteamformation<-alle_ligaer$opponentTeamFormation
 
 ## X8 Distance til mål ##
+#Udregnes manuelt
 q<-120-(alle_ligaer$location_X)
 qq<-q^2
 qqq<-40-(alle_ligaer$location_X)
@@ -283,6 +279,7 @@ qqqq<-qqq^2
 x8_distance<-sqrt(qq+qqqq)
 
 ## X9 Vinkel ##
+#Udregnes manuelt ud fra distancen 
 w<-atan((8*q)/qq+(qqqq - (8/2)^2))*180/pi
 x9_vinkel<-w
                   
